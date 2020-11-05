@@ -4,51 +4,57 @@
 # 99 = Terminate
 
 infile = open("Day2/input.txt", "r")
-opcodes = [int(i) for i in infile.readline().split(',')]
-# print(opcodes)
-opit = iter(opcodes)
+opcodesIn = [int(i) for i in infile.readline().split(',')]
 
-for x in range(len(opcodes)):
-    terminate = False
-    pos1 = opcodes[x+1]
-    pos2 = opcodes[x+2]
-    insert = opcodes[x+3]
-    if x%4 == 0:
-        if opcodes[x] == 1:
-            opcodes[insert] = opcodes[pos1] + opcodes[pos2]
-            print("Pos: ", x, " Add: ", opcodes[pos1], " and ", opcodes[pos2], " is ", opcodes[insert])
-            continue
-        if opcodes[x] == 2:
-            opcodes[insert] = opcodes[pos1] * opcodes[pos2]
-            print("Pos: ", x, " Mul: ", opcodes[pos1], " and ", opcodes[pos2], " is ", opcodes[insert])
-            continue
-        if opcodes[x] == 99:
-            # for a in range(opcodes[x], len(opcodes)):
-            print(opcodes)
-            print (x, " : ",opcodes[x])
-            print("Final Opcode: ", opcodes[0])
-            terminate = True
+
+def update_codes(codes, verb, noun):
+    copy = list(codes)
+    copy[1] = verb
+    copy[2] = noun
+    return copy
+
+
+def process_opcodes(verb, noun):
+    new_opcodes = update_codes(opcodesIn, verb, noun)
+
+    for x in range(len(new_opcodes)):
+        terminate = False
+        pos1 = new_opcodes[x+1]
+        pos2 = new_opcodes[x+2]
+        insert = new_opcodes[x+3]
+        if x % 4 == 0:
+            if new_opcodes[x] == 1:
+                new_opcodes[insert] = new_opcodes[pos1] + new_opcodes[pos2]
+                continue
+            if new_opcodes[x] == 2:
+                new_opcodes[insert] = new_opcodes[pos1] * new_opcodes[pos2]
+                continue
+            if new_opcodes[x] == 99:
+                terminate = True
+                break
+        if terminate:
             break
-    if terminate:
-        break
-    continue
+        continue
+    return new_opcodes[0]
 
+# dictionary to hold verb noun value
+mydict = {}
+# found_pair = ()
+def find_pair_from_output(output):
+    found_output = False
+    for x in range(100):
+        if found_output:
+            break
+        for y in range(100):
+            mydict[x,y] = process_opcodes(x, y)
+            if mydict[x, y] == output:
+                found_output = True
+                # found_pair = (x, y)
+                break
 
-#     print(x)
-#     if opcodes[x] == 1:
-#         opcodes[insert] = opcodes[pos1] + opcodes[pos2]
-#
-#         print("Pos: ", x, " Add: ", opcodes[pos1], " and ", opcodes[pos2], " is ", opcodes[insert])
-#         continue
-#     if opcodes[x] == 2:
-#         opcodes[insert] = opcodes[pos1] * opcodes[pos2]
-#         print("Pos: ", x, " Mul: ", opcodes[pos1], " and ", opcodes[pos2], " is ", opcodes[insert])
-#         continue
-#     if opcodes[x] == 99:
-#         print("Final Opcode: ", opcodes[0])
-#         break
-#
-# print(opcodes)
-#
-
-# fix array positions to read values from the correct places
+print("Enter the value to obtain the verb/noun pair:")
+user_input = int(input())
+find_pair_from_output(user_input)
+for key,value in mydict.items():
+    if value == user_input:
+        print("(Verb, Noun): ", key, "\nValue: ", value)
